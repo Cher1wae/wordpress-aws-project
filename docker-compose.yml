@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - /mnt/mysql-data:/var/lib/mysql
+    networks:
+      - wp-network
+
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress
+    restart: always
+    ports:
+      - "80:80"
+    env_file:
+      - .env
+    environment:
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+    depends_on:
+      - mysql
+    networks:
+      - wp-network
+
+networks:
+  wp-network:
